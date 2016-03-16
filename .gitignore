@@ -3,3 +3,4 @@ sampleSubmission/
 trainHistory/
 testHistory/
 transactions/
+*.class
