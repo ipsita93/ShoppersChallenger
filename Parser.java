@@ -13,7 +13,7 @@ public class Parser {
 		try {
 			
 			Class.forName("com.mysql.jdbc.Driver").newInstance();
-			c = DriverManager.getConnection("jdbc:mysql://localhost:5432/testdb?user=ipsita&password=123");
+			c = DriverManager.getConnection("jdbc:mysql://kivstudymockdb.cy4xjdg7ghgd.us-east-1.rds.amazonaws.com:3306/testdb?user=root&password=qwerty123");
 			System.out.println("Opened database successfully.");
 			stmt = c.createStatement();
 			String sql = "CREATE TABLE Customers " +
