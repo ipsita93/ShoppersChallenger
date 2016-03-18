@@ -14,11 +14,11 @@ public class Parser {
 		//String trainHistory_filename = "./trainHistory/trainHistory.csv";
 		//String testHistory_filename = "./testHistory/testHistory.csv"; 
 
-		populateTables(offers_filename, 'offers');
+		populateTables(offers_filename, "offers");
 			
 	}
 	
-	public static populateTables(String fileName, String tableName){
+	public static void populateTables(String fileName, String tableName){
 		String fileToParse = filename;
 		BufferedReader fileReader = null;
 		
