@@ -8,6 +8,20 @@ import java.sql.SQLException;
 
 public class Parser {
 	public static void main(String[] args) {
+
+		String offers_filename = "./offers/offers.csv";
+		//String transactions_filename = "./transactions/transactions.csv";
+		//String trainHistory_filename = "./trainHistory/trainHistory.csv";
+		//String testHistory_filename = "./testHistory/testHistory.csv"; 
+
+		populateTables(offers_filename, 'offers');
+			
+	}
+	
+	public static populateTables(String fileName, String tableName){
+		String fileToParse = filename;
+		BufferedReader fileReader = null;
+		
 		Connection c = null;
 		Statement stmt = null;
 		try {
@@ -16,25 +30,8 @@ public class Parser {
 			c = DriverManager.getConnection("jdbc:mysql://kivstudymockdb.cy4xjdg7ghgd.us-east-1.rds.amazonaws.com:3306/testdb?user=root&password=qwerty123");
 			System.out.println("Opened database successfully.");
 			stmt = c.createStatement();
-			String sql = "CREATE TABLE Customers " +
-				"(id INT PRIMARY KEY     NOT NULL," +
-				"chain INT    NOT NULL, " +
-				" offer INT  NOT NULL, " +
-				"market INT NOT NULL, " +
-				"repeattrips INT NOT NULL, "+
-				"repeater BOOLEAN NOT NULL, "+
-				"offerdate DATE NOT NULL)";
-			stmt.executeUpdate(sql);
-			stmt.close();
-			c.close();
-			String offers_filename = "./offers/offers.csv";
-			String transactions_filename = "./transactions/transactions.csv";
-			String trainHistory_filename = "./trainHistory/trainHistory.csv";
-			String testHistory_filename = "./testHistory/testHistory.csv"; 
 
-			//Input file which needs to be parsed
-			String fileToParse = trainHistory_filename;
-			BufferedReader fileReader = null;
+
 
 			//Delimiter used in CSV file
 			final String DELIMITER = ",";
@@ -49,11 +46,17 @@ public class Parser {
 				{
 					//Get all tokens available in line
 					String[] tokens = line.split(DELIMITER);
-					for(String token : tokens)
+					String sql = "Insert into " + tableName + " values (";
+					for(int i=0; i<tokens.length(); i++)
 					{
 						//Print all tokens
-						System.out.println(token);
+						sql += tokens[i];
+						if(i!=tokens.length()-1){
+							sql += ",";
+						}			
 					}
+					sql += ");" ;
+					stmt.executeUpdate(sql);
 				}
 			} 
 			catch (Exception e) {
@@ -67,13 +70,14 @@ public class Parser {
 					e.printStackTrace();
 				}
 			}
-
+					
+			stmt.close();
+			c.close();
+			
 		} catch (Exception e) {
 			System.err.println( e.getClass().getName()+": "+ e.getMessage() );
 			System.exit(0);
-
-
-
 		}
+		
 	}
 }
