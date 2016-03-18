@@ -9,25 +9,25 @@ import java.sql.SQLException;
 public class Parser {
 	public static void main(String[] args) {
 
-		String offers_filename = "./offers/offers.csv";
-		//String transactions_filename = "./transactions/transactions.csv";
+		String offers_filename = "C:\\Users\\Sony\\Google Drive\\NUS\\8 - Year 4 Sem 2\\CS4225 Massive Data Processing Techniques in Data Science\\Project\\ShoppersChallenge\\offers\\offers.csv";
+						//String transactions_filename = "./transactions/transactions.csv";
 		//String trainHistory_filename = "./trainHistory/trainHistory.csv";
 		//String testHistory_filename = "./testHistory/testHistory.csv"; 
 
 		populateTables(offers_filename, "offers");
-			
+
 	}
-	
+
 	public static void populateTables(String fileName, String tableName){
-		String fileToParse = filename;
+		String fileToParse = fileName;
 		BufferedReader fileReader = null;
-		
+
 		Connection c = null;
 		Statement stmt = null;
 		try {
-			
+
 			Class.forName("com.mysql.jdbc.Driver").newInstance();
-			c = DriverManager.getConnection("jdbc:mysql://kivstudymockdb.cy4xjdg7ghgd.us-east-1.rds.amazonaws.com:3306/testdb?user=root&password=qwerty123");
+			c = DriverManager.getConnection("jdbc:mysql://kivstudymockdb.cy4xjdg7ghgd.us-east-1.rds.amazonaws.com:3306/shoppers?user=root&password=qwerty123");
 			System.out.println("Opened database successfully.");
 			stmt = c.createStatement();
 
@@ -47,11 +47,11 @@ public class Parser {
 					//Get all tokens available in line
 					String[] tokens = line.split(DELIMITER);
 					String sql = "Insert into " + tableName + " values (";
-					for(int i=0; i<tokens.length(); i++)
+					for(int i=0; i<tokens.length; i++)
 					{
 						//Print all tokens
 						sql += tokens[i];
-						if(i!=tokens.length()-1){
+						if(i!=tokens.length-1){
 							sql += ",";
 						}			
 					}
@@ -70,14 +70,14 @@ public class Parser {
 					e.printStackTrace();
 				}
 			}
-					
+
 			stmt.close();
 			c.close();
-			
+
 		} catch (Exception e) {
 			System.err.println( e.getClass().getName()+": "+ e.getMessage() );
 			System.exit(0);
 		}
-		
+
 	}
 }
