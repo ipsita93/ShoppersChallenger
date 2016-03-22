@@ -3,8 +3,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.Statement; 
-import java.sql.SQLException;
+import java.sql.Statement;
 
 public class Parser {
 	public static void main(String[] args) {
@@ -12,12 +11,13 @@ public class Parser {
 		String offers_filename = "C:\\Users\\Sony\\Google Drive\\NUS\\8 - Year 4 Sem 2\\CS4225 Massive Data Processing Techniques in Data Science\\Project\\ShoppersChallenge\\offers\\offers.csv";
 		String transactions_filename = "C:\\Users\\Sony\\Google Drive\\NUS\\8 - Year 4 Sem 2\\CS4225 Massive Data Processing Techniques in Data Science\\Project\\ShoppersChallenge\\transactions\\xaa.csv";
 		String trainHistory_filename = "C:\\Users\\Sony\\Google Drive\\NUS\\8 - Year 4 Sem 2\\CS4225 Massive Data Processing Techniques in Data Science\\Project\\ShoppersChallenge\\trainHistory\\trainHistory.csv";
-		//String testHistory_filename = "./testHistory/testHistory.csv"; 
+		// String testHistory_filename = "./testHistory/testHistory.csv";
 
-		populateOffersTable(offers_filename, "offers");
+		// populateOffersTable(offers_filename, "offers");
 		populateTransactionTable(transactions_filename, "transactions");
-		populateTrainHistoryTable(trainHistory_filename, "trainHistory");
-		populateCustomersTable();
+		// populateTrainHistoryTable(trainHistory_filename, "trainHistory");
+		// populateCustomersTable();
+		System.out.println("Parsing done.");
 	}
 
 	public static void populateCustomersTable() {
@@ -25,24 +25,24 @@ public class Parser {
 		Statement stmt = null;
 		try {
 
-		Class.forName("com.mysql.jdbc.Driver").newInstance();
-		c = DriverManager.getConnection("jdbc:mysql://kivstudymockdb.cy4xjdg7ghgd.us-east-1.rds.amazonaws.com:3306/shoppers?user=root&password=qwerty123");
-		System.out.println("Opened database successfully.");
-		stmt = c.createStatement();
-		
-		String sql = "CREATE TABLE customers AS (SELECT trainHistory.*, offers.category, offers.quantity, offers.company_id, offers.offervalue, offers.brand_id FROM   trainHistory INNER JOIN offers ON trainHistory.offer_id = offers.offer_id);";
-		
-		stmt.executeUpdate(sql);
-		stmt.close();
-		c.close();
-		} 
-		catch (Exception e) {
+			Class.forName("com.mysql.jdbc.Driver").newInstance();
+			c = DriverManager
+					.getConnection("jdbc:mysql://kivstudymockdb.cy4xjdg7ghgd.us-east-1.rds.amazonaws.com:3306/shoppers?user=root&password=qwerty123");
+			System.out.println("Opened database successfully.");
+			stmt = c.createStatement();
+
+			String sql = "CREATE TABLE customers AS (SELECT trainHistory.*, offers.category, offers.quantity, offers.company_id, offers.offervalue, offers.brand_id FROM   trainHistory INNER JOIN offers ON trainHistory.offer_id = offers.offer_id);";
+
+			stmt.executeUpdate(sql);
+			stmt.close();
+			c.close();
+		} catch (Exception e) {
 			e.printStackTrace();
-		} 
-	
+		}
+
 	}
-	
-	public static void populateOffersTable(String fileName, String tableName){
+
+	public static void populateOffersTable(String fileName, String tableName) {
 		String fileToParse = fileName;
 		BufferedReader fileReader = null;
 
@@ -51,53 +51,48 @@ public class Parser {
 		try {
 
 			Class.forName("com.mysql.jdbc.Driver").newInstance();
-			c = DriverManager.getConnection("jdbc:mysql://kivstudymockdb.cy4xjdg7ghgd.us-east-1.rds.amazonaws.com:3306/shoppers?user=root&password=qwerty123");
+			c = DriverManager
+					.getConnection("jdbc:mysql://kivstudymockdb.cy4xjdg7ghgd.us-east-1.rds.amazonaws.com:3306/shoppers?user=root&password=qwerty123");
 			System.out.println("Opened database successfully.");
 			stmt = c.createStatement();
 
-			//Delimiter used in CSV file
+			// Delimiter used in CSV file
 			final String DELIMITER = ",";
-			try
-			{
+			try {
 				String line = "";
-				//Create the file reader
+				// Create the file reader
 				fileReader = new BufferedReader(new FileReader(fileToParse));
-				
-				int numLines = 0; 
-				//Read the file line by line
-				while ((line = fileReader.readLine()) != null) 
-				{
+
+				int numLines = 0;
+				// Read the file line by line
+				while ((line = fileReader.readLine()) != null) {
 					if (numLines != 0) {
-						//System.out.println(line);
-						//Get all tokens available in line
+						// System.out.println(line);
+						// Get all tokens available in line
 						String[] tokens = line.split(DELIMITER);
 						String sql = "Insert into " + tableName + " values (";
-						for(int i=0; i<tokens.length; i++)
-						{
+						for (int i = 0; i < tokens.length; i++) {
 							if (Character.isDigit(tokens[i].charAt(0)) == false) {
 								System.out.println(tokens[i]);
-								tokens[i] = "\'"+tokens[i]+"\'";
+								tokens[i] = "\'" + tokens[i] + "\'";
 							}
-							//Print all tokens
+							// Print all tokens
 							sql += tokens[i];
-							if(i!=tokens.length-1){
+							if (i != tokens.length - 1) {
 								sql += ",";
-							}			
+							}
 						}
-						sql += ");" ;
+						sql += ");";
 						System.out.println(sql);
 						stmt.executeUpdate(sql);
-						
+
 					}
 					numLines++;
-					
+
 				}
-			} 
-			catch (Exception e) {
+			} catch (Exception e) {
 				e.printStackTrace();
-			} 
-			finally
-			{
+			} finally {
 				try {
 					fileReader.close();
 				} catch (IOException e) {
@@ -109,13 +104,14 @@ public class Parser {
 			c.close();
 
 		} catch (Exception e) {
-			System.err.println( e.getClass().getName()+": "+ e.getMessage() );
+			System.err.println(e.getClass().getName() + ": " + e.getMessage());
 			System.exit(0);
 		}
 
 	}
 
-	public static void populateTransactionTable(String fileName, String tableName){
+	public static void populateTransactionTable(String fileName,
+			String tableName) {
 		String fileToParse = fileName;
 		BufferedReader fileReader = null;
 
@@ -124,53 +120,75 @@ public class Parser {
 		try {
 
 			Class.forName("com.mysql.jdbc.Driver").newInstance();
-			c = DriverManager.getConnection("jdbc:mysql://kivstudymockdb.cy4xjdg7ghgd.us-east-1.rds.amazonaws.com:3306/shoppers?user=root&password=qwerty123");
+			c = DriverManager
+					.getConnection("jdbc:mysql://kivstudymockdb.cy4xjdg7ghgd.us-east-1.rds.amazonaws.com:3306/shoppers?user=root&password=qwerty123");
 			System.out.println("Opened database successfully.");
 			stmt = c.createStatement();
 
-			//Delimiter used in CSV file
+			// Delimiter used in CSV file
 			final String DELIMITER = ",";
-			try
-			{
+			try {
 				String line = "";
-				//Create the file reader
+				// Create the file reader
 				fileReader = new BufferedReader(new FileReader(fileToParse));
-				
-				int numLines = 0; 
-				//Read the file line by line
-				while ((line = fileReader.readLine()) != null) 
-				{
+
+				int numLines = 0;
+				// Read the file line by line
+				while ((line = fileReader.readLine()) != null) {
 					if (numLines != 0) {
-						//System.out.println(line);
-						//Get all tokens available in line
+						// System.out.println(line);
+						// Get all tokens available in line
 						String[] tokens = line.split(DELIMITER);
-						String sql = "Insert into " + tableName + " values (";
-						for(int i=0; i<tokens.length; i++)
-						{
-							if (Character.isDigit(tokens[i].charAt(0)) == false) {
-								System.out.println(tokens[i]);
-								tokens[i] = "\'"+tokens[i]+"\'";
+						String t_sql = "Insert into " + tableName + " values (";
+						String tp_sql = "Insert into " + tableName
+								+ "_processsed" + " values (";
+
+						for (int i = 0; i < tokens.length; i++) {
+							// customer_id,chain_id,dept,category,company_id,brand_id,date,productsize,productmeasure,purchasequantity,purchaseamount
+							if (i == 0 || i == 1 || i == 2 || i == 3 || i == 4
+									|| i == 5 || i == 9) {
+								// change to binary
+								tp_sql += "b\'"
+										+ Integer.toBinaryString(new Integer(
+												tokens[i])) + "\'" + ",";
+							} else if (i == 6) {
+								tp_sql += "\'" + tokens[i] + "\'" + ",";
+								tokens[i] = "\'" + tokens[i] + "\'";
+							} else if (i == 7 || i == 10) {
+								tp_sql += tokens[i] + ",";
 							}
-							//Print all tokens
-							sql += tokens[i];
-							if(i!=tokens.length-1){
-								sql += ",";
-							}			
+							
+							
+							
+
+							if (i == 8) {
+								tokens[i] = "\'" + tokens[i] + "\'";
+							}
+							// Print all tokens
+							t_sql += tokens[i];
+							if (i != tokens.length - 1) {
+								t_sql += ",";
+
+							}
 						}
-						sql += ");" ;
-						System.out.println(sql);
-						stmt.executeUpdate(sql);
-						
+						t_sql += ");";
+						tp_sql = tp_sql.substring(0, tp_sql.length() - 1); // remove
+																			// last
+																			// comma
+						tp_sql += ");";
+
+						System.out.println(t_sql);
+						stmt.executeUpdate(t_sql);
+						System.out.println(tp_sql);
+						stmt.executeUpdate(tp_sql);
+
 					}
 					numLines++;
-					
+
 				}
-			} 
-			catch (Exception e) {
+			} catch (Exception e) {
 				e.printStackTrace();
-			} 
-			finally
-			{
+			} finally {
 				try {
 					fileReader.close();
 				} catch (IOException e) {
@@ -182,13 +200,14 @@ public class Parser {
 			c.close();
 
 		} catch (Exception e) {
-			System.err.println( e.getClass().getName()+": "+ e.getMessage() );
+			System.err.println(e.getClass().getName() + ": " + e.getMessage());
 			System.exit(0);
 		}
 
 	}
 
-	public static void populateTrainHistoryTable(String fileName, String tableName){
+	public static void populateTrainHistoryTable(String fileName,
+			String tableName) {
 		String fileToParse = fileName;
 		BufferedReader fileReader = null;
 
@@ -197,53 +216,48 @@ public class Parser {
 		try {
 
 			Class.forName("com.mysql.jdbc.Driver").newInstance();
-			c = DriverManager.getConnection("jdbc:mysql://kivstudymockdb.cy4xjdg7ghgd.us-east-1.rds.amazonaws.com:3306/shoppers?user=root&password=qwerty123");
+			c = DriverManager
+					.getConnection("jdbc:mysql://kivstudymockdb.cy4xjdg7ghgd.us-east-1.rds.amazonaws.com:3306/shoppers?user=root&password=qwerty123");
 			System.out.println("Opened database successfully.");
 			stmt = c.createStatement();
 
-			//Delimiter used in CSV file
+			// Delimiter used in CSV file
 			final String DELIMITER = ",";
-			try
-			{
+			try {
 				String line = "";
-				//Create the file reader
+				// Create the file reader
 				fileReader = new BufferedReader(new FileReader(fileToParse));
-				
-				int numLines = 0; 
-				//Read the file line by line
-				while ((line = fileReader.readLine()) != null) 
-				{
+
+				int numLines = 0;
+				// Read the file line by line
+				while ((line = fileReader.readLine()) != null) {
 					if (numLines != 0) {
-						//System.out.println(line);
-						//Get all tokens available in line
+						// System.out.println(line);
+						// Get all tokens available in line
 						String[] tokens = line.split(DELIMITER);
 						String sql = "Insert into " + tableName + " values (";
-						for(int i=0; i<tokens.length; i++)
-						{
+						for (int i = 0; i < tokens.length; i++) {
 							if (Character.isDigit(tokens[i].charAt(0)) == false) {
 								System.out.println(tokens[i]);
-								tokens[i] = "\'"+tokens[i]+"\'";
+								tokens[i] = "\'" + tokens[i] + "\'";
 							}
-							//Print all tokens
+							// Print all tokens
 							sql += tokens[i];
-							if(i!=tokens.length-1){
+							if (i != tokens.length - 1) {
 								sql += ",";
-							}			
+							}
 						}
-						sql += ");" ;
+						sql += ");";
 						System.out.println(sql);
 						stmt.executeUpdate(sql);
-						
+
 					}
 					numLines++;
-					
+
 				}
-			} 
-			catch (Exception e) {
+			} catch (Exception e) {
 				e.printStackTrace();
-			} 
-			finally
-			{
+			} finally {
 				try {
 					fileReader.close();
 				} catch (IOException e) {
@@ -255,11 +269,10 @@ public class Parser {
 			c.close();
 
 		} catch (Exception e) {
-			System.err.println( e.getClass().getName()+": "+ e.getMessage() );
+			System.err.println(e.getClass().getName() + ": " + e.getMessage());
 			System.exit(0);
 		}
 
 	}
-
 
 }
