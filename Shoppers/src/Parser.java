@@ -17,12 +17,76 @@ public class Parser {
 		// populateOffersTable(offers_filename, "offers");
 		// populateTrainHistoryTable(trainHistory_filename, "trainHistory");
 		// populateCustomersTable();
-		populateNewFeaturesCustomersTable(transactions_filename); // takes in
-																	// filename
+		addNewFeaturesColumnsCustomersTable();
+		// populateNewFeaturesCustomersTable(transactions_filename); // takes in
+		// filename
 
 		// populateTransactionTable(transactions_filename, "transactions");
 
 		System.out.println("Parsing done.");
+	}
+
+	public static void addNewFeaturesColumnsCustomersTable() {
+		Connection c = null;
+		Statement stmt = null;
+		try {
+
+			Class.forName("com.mysql.jdbc.Driver").newInstance();
+			c = DriverManager
+					.getConnection("jdbc:mysql://kivstudymockdb.cy4xjdg7ghgd.us-east-1.rds.amazonaws.com:3306/shoppers?user=root&password=qwerty123");
+			System.out.println("Opened database successfully.");
+			stmt = c.createStatement();
+
+			String sql = "alter table customers add column has_bought_company_before_q int default 0;";
+			stmt.executeUpdate(sql);
+			sql = "alter table customers add column has_bought_company_before_bool bit(1) default 0;";
+			stmt.executeUpdate(sql);
+			sql = "alter table customers add column has_bought_company_before_a float default 0.0;";
+			stmt.executeUpdate(sql);
+			sql = "alter table customers add column has_returned_company_before_q int default 0;";
+			stmt.executeUpdate(sql);
+			sql = "alter table customers add column has_returned_company_before_bool bit(1) default 0;";
+			stmt.executeUpdate(sql);
+
+			sql = "alter table customers add column has_bought_brand_before_q int default 0;";
+			stmt.executeUpdate(sql);
+			sql = "alter table customers add column has_bought_brand_before_bool bit(1) default 0;";
+			stmt.executeUpdate(sql);
+			sql = "alter table customers add column has_bought_brand_before_a float default 0.0;";
+			stmt.executeUpdate(sql);
+			sql = "alter table customers add column has_returned_brand_before_q int default 0;";
+			stmt.executeUpdate(sql);
+			sql = "alter table customers add column has_returned_brand_before_bool bit(1) default 0;";
+			stmt.executeUpdate(sql);
+
+			sql = "alter table customers add column has_bought_category_before_q int default 0;";
+			stmt.executeUpdate(sql);
+			sql = "alter table customers add column has_bought_category_before_bool bit(1) default 0;";
+			stmt.executeUpdate(sql);
+			sql = "alter table customers add column has_bought_category_before_a float default 0.0;";
+			stmt.executeUpdate(sql);
+			sql = "alter table customers add column has_returned_category_before_q int default 0;";
+			stmt.executeUpdate(sql);
+			sql = "alter table customers add column has_returned_category_before_bool bit(1) default 0;";
+			stmt.executeUpdate(sql);
+
+			sql = "alter table customers add column last_purchase_date_company_brand_category date;";
+			stmt.executeUpdate(sql);
+			sql = "alter table customers add column num_days_since_last_purchase_transaction int default 0;";
+			stmt.executeUpdate(sql);
+
+			sql = "alter table customers add column has_bought_same_category_different_company_q bit(1) default 0;";
+			stmt.executeUpdate(sql);
+			sql = "alter table customers add column has_bought_same_company_different_category_q bit(1) default 0;";
+			stmt.executeUpdate(sql);
+
+			stmt.close();
+			c.close();
+		} catch (Exception e) {
+			System.err.println(e.getClass().getName() + ": " + e.getMessage());
+			System.exit(0);
+		}
+
 	}
 
 	public static void populateNewFeaturesCustomersTable(String fileName) {
@@ -46,9 +110,6 @@ public class Parser {
 				// Create the file reader
 				fileReader = new BufferedReader(new FileReader(fileToParse));
 
-				String sql = "alter table customers add column has_bought_company_before_q int;";
-				stmt.executeUpdate(sql);
-				
 				int numLines = 0;
 				// Read the file line by line
 				while ((line = fileReader.readLine()) != null) {
@@ -56,11 +117,11 @@ public class Parser {
 						// Get all tokens available in line
 						String[] tokens = line.split(DELIMITER);
 						// for (int i = 0; i < tokens.length; i++) {
-						String query = "select c.has_bought_company_before_q from customers c"
+						String sql = "select c.has_bought_company_before_q from customers c"
 								+ " where c.customer_id = "
 								+ tokens[0]
 								+ " and c.company_id = " + tokens[3] + ";";
-						ResultSet rs = stmt.executeQuery(query);
+						ResultSet rs = stmt.executeQuery(sql);
 						int iVal1 = 0;
 						while (rs.next()) {
 							iVal1 = Integer.getInteger(rs
@@ -68,8 +129,9 @@ public class Parser {
 						}
 						iVal1++;
 						sql = "update customers c "
-								+ "set c.has_bought_company_before_q = " + iVal1
-								+ " where c.customer_id = " + tokens[0] + ";";
+								+ "set c.has_bought_company_before_q = "
+								+ iVal1 + " where c.customer_id = " + tokens[0]
+								+ ";";
 						stmt.executeUpdate(sql);
 
 						// }
