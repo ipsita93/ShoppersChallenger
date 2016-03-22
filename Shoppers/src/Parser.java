@@ -13,11 +13,78 @@ public class Parser {
 		String trainHistory_filename = "C:\\Users\\Sony\\Google Drive\\NUS\\8 - Year 4 Sem 2\\CS4225 Massive Data Processing Techniques in Data Science\\Project\\ShoppersChallenge\\trainHistory\\trainHistory.csv";
 		// String testHistory_filename = "./testHistory/testHistory.csv";
 
-		// populateOffersTable(offers_filename, "offers");
-		populateTransactionTable(transactions_filename, "transactions");
-		// populateTrainHistoryTable(trainHistory_filename, "trainHistory");
-		// populateCustomersTable();
+		populateOffersTable(offers_filename, "offers");
+		// populateTransactionTable(transactions_filename, "transactions");
+		populateTrainHistoryTable(trainHistory_filename, "trainHistory");
+		populateCustomersTable();
+		populateNewFeaturesCustomersTable(transactions_filename); // takes in
+																	// filename
+
 		System.out.println("Parsing done.");
+	}
+
+	public static void populateNewFeaturesCustomersTable(String fileName) {
+		String fileToParse = fileName;
+		BufferedReader fileReader = null;
+
+		Connection c = null;
+		Statement stmt = null;
+		try {
+
+			Class.forName("com.mysql.jdbc.Driver").newInstance();
+			c = DriverManager
+					.getConnection("jdbc:mysql://kivstudymockdb.cy4xjdg7ghgd.us-east-1.rds.amazonaws.com:3306/shoppers?user=root&password=qwerty123");
+			System.out.println("Opened database successfully.");
+			stmt = c.createStatement();
+
+			// Delimiter used in CSV file
+			final String DELIMITER = ",";
+			try {
+				String line = "";
+				// Create the file reader
+				fileReader = new BufferedReader(new FileReader(fileToParse));
+
+				int numLines = 0;
+				// Read the file line by line
+				while ((line = fileReader.readLine()) != null) {
+					if (numLines != 0) {
+						// Get all tokens available in line
+						String[] tokens = line.split(DELIMITER);
+						for (int i = 0; i < tokens.length; i++) {
+							String sql = "";
+
+
+							
+							
+							
+							
+							System.out.println(sql);
+							stmt.executeUpdate(sql);
+
+						}
+
+					}
+					numLines++;
+
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			} finally {
+				try {
+					fileReader.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+
+			stmt.close();
+			c.close();
+
+		} catch (Exception e) {
+			System.err.println(e.getClass().getName() + ": " + e.getMessage());
+			System.exit(0);
+		}
+
 	}
 
 	public static void populateCustomersTable() {
@@ -157,9 +224,6 @@ public class Parser {
 							} else if (i == 7 || i == 10) {
 								tp_sql += tokens[i] + ",";
 							}
-							
-							
-							
 
 							if (i == 8) {
 								tokens[i] = "\'" + tokens[i] + "\'";
@@ -237,7 +301,12 @@ public class Parser {
 						String[] tokens = line.split(DELIMITER);
 						String sql = "Insert into " + tableName + " values (";
 						for (int i = 0; i < tokens.length; i++) {
-							if (Character.isDigit(tokens[i].charAt(0)) == false) {
+							if (tokens[i].equals("t")) {
+								tokens[i] = "1";
+							} else if (tokens[i].equals("f")) {
+								tokens[i] = "0";
+							} else if (Character.isDigit(tokens[i].charAt(0)) == false
+									|| tokens[i].indexOf("-") > -1) {
 								System.out.println(tokens[i]);
 								tokens[i] = "\'" + tokens[i] + "\'";
 							}
