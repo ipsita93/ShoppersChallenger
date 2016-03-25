@@ -11,25 +11,36 @@ import java.util.Date;
 public class Parser {
 	public static void main(String[] args) {
 
-		String offers_filename = "C:\\Users\\Sony\\Google Drive\\NUS\\8 - Year 4 Sem 2\\CS4225 Massive Data Processing Techniques in Data Science\\Project\\ShoppersChallenge\\offers\\offers.csv";
-		String transactions_filename = "C:\\Users\\Sony\\Google Drive\\NUS\\8 - Year 4 Sem 2\\CS4225 Massive Data Processing Techniques in Data Science\\Project\\ShoppersChallenge\\transactions\\";
-		String trainHistory_filename = "C:\\Users\\Sony\\Google Drive\\NUS\\8 - Year 4 Sem 2\\CS4225 Massive Data Processing Techniques in Data Science\\Project\\ShoppersChallenge\\trainHistory\\trainHistory.csv";
-		String testHistory_filename = "C:\\Users\\Sony\\Google Drive\\NUS\\8 - Year 4 Sem 2\\CS4225 Massive Data Processing Techniques in Data Science\\Project\\ShoppersChallenge\\testHistory\\testHistoryremainder.csv";
+		String offers_filename = "";
+		String transactions_filename = "";
+		String trainHistory_filename = "";
+		String testHistory_filename = "";
 
-		// Step 1:
+		String env = System.getProperty("os.name");
+		if (env.contains("indows")) {
+			offers_filename = "C:\\Users\\Sony\\Google Drive\\NUS\\8 - Year 4 Sem 2\\CS4225 Massive Data Processing Techniques in Data Science\\Project\\ShoppersChallenge\\offers\\offers.csv";
+			transactions_filename = "C:\\Users\\Sony\\Google Drive\\NUS\\8 - Year 4 Sem 2\\CS4225 Massive Data Processing Techniques in Data Science\\Project\\ShoppersChallenge\\transactions\\";
+			trainHistory_filename = "C:\\Users\\Sony\\Google Drive\\NUS\\8 - Year 4 Sem 2\\CS4225 Massive Data Processing Techniques in Data Science\\Project\\ShoppersChallenge\\trainHistory\\trainHistory1.csv";
+			testHistory_filename = "C:\\Users\\Sony\\Google Drive\\NUS\\8 - Year 4 Sem 2\\CS4225 Massive Data Processing Techniques in Data Science\\Project\\ShoppersChallenge\\testHistory\\testHistory.csv";
+		} else {
+			offers_filename = "./offers/offers.csv";
+			transactions_filename = "./transactions/transactions.csv";
+			trainHistory_filename = "./trainHistory/trainHistory.csv";
+			testHistory_filename = "./testHistor/testHistory.csv";
+
+		}// Step 1:
 		// populateOffersTable(offers_filename, "offers");
 
 		// Step 2:
 		// populateHistoryTable(trainHistory_filename, "trainHistory");
 		// Step 3:
-		populateHistoryTable(testHistory_filename, "testHistory");
+		// populateHistoryTable(testHistory_filename, "testHistory");
 
 		// Step 4:
-		/*
-		 * populateCustomersTable();
-		 * addNewFeaturesCustomersTable("customerstrain");
-		 * addNewFeaturesCustomersTable("customerstest");
-		 */
+
+		//populateCustomersTable();
+		//addNewFeaturesCustomersTable("customerstrain");
+		//addNewFeaturesCustomersTable("customerstest");
 
 		// Step 5:
 		/*
@@ -39,6 +50,8 @@ public class Parser {
 		 * = "x"; }
 		 */
 
+		populateNewFeaturesCustomersTable(transactions_filename + "xaa");
+		
 		System.out.println("Parsing done.");
 	}
 
@@ -235,7 +248,7 @@ public class Parser {
 								+ has_returned_company_before_bool
 								+ " where c.customer_id = " + tokens[0]
 								+ " and c.company_id = " + tokens[4] + ";";
-						System.out.println(sql);
+						//System.out.println(sql);
 						stmt.executeUpdate(sql);
 						/*
 						 * c.has_bought_brand_before_q,
@@ -286,7 +299,7 @@ public class Parser {
 								+ " where c.customer_id = " + tokens[0]
 								+ " and c.company_id = " + tokens[4]
 								+ " and c.brand_id = " + tokens[5] + ";";
-						System.out.println(sql);
+						//System.out.println(sql);
 						stmt.executeUpdate(sql);
 
 						/*
@@ -339,7 +352,7 @@ public class Parser {
 								+ has_returned_category_before_bool
 								+ " where c.customer_id = " + tokens[0]
 								+ " and c.category = " + tokens[3] + ";";
-						System.out.println(sql);
+						//System.out.println(sql);
 						stmt.executeUpdate(sql);
 						/*
 						 * c.has_bought_company_brand_category_before_q,
@@ -397,7 +410,7 @@ public class Parser {
 								+ " and c.category = " + tokens[3]
 								+ " and c.company_id = " + tokens[4]
 								+ " and c.brand_id = " + tokens[5] + ";";
-						System.out.println(sql);
+						//System.out.println(sql);
 						stmt.executeUpdate(sql);
 
 						/*
@@ -412,7 +425,7 @@ public class Parser {
 								+ " and c.brand_id = "
 								+ tokens[5]
 								+ " and c.category = " + tokens[3] + ";";
-						System.out.println(sql);
+						//System.out.println(sql);
 						rs = stmt.executeQuery(sql);
 						Date last_purchase_date = new Date();
 						Date offer_date = new Date();
@@ -421,7 +434,7 @@ public class Parser {
 						String dateString = "";
 
 						int customer_id = 0;
-						System.out.println(last_purchase_date);
+						//System.out.println(last_purchase_date);
 						while (rs.next()) {
 							customer_id = Integer.getInteger(rs
 									.getString("customer_id"));
@@ -449,8 +462,10 @@ public class Parser {
 									+ "c.num_days_since_last_purchase_transaction = "
 									+ num_days_since_last_purchase_transaction
 									+ " where c.customer_id = " + customer_id
-									+ ";";
-							System.out.println(sql);
+									+ " and c.company_id = " + tokens[4]
+									+ " and c.brand_id = " + tokens[5]
+									+ " and c.category = " + tokens[3] + ";";
+							//System.out.println(sql);
 							stmt.executeUpdate(sql);
 						}
 
@@ -461,7 +476,7 @@ public class Parser {
 								+ " and c.category = "
 								+ tokens[3]
 								+ " and c.company_id <> " + tokens[4] + ";";
-						System.out.println(sql);
+						//System.out.println(sql);
 						rs = stmt.executeQuery(sql);
 
 						customer_id = 0;
@@ -480,7 +495,8 @@ public class Parser {
 									+ "set has_bought_same_category_different_company_q = "
 									+ (has_bought_same_category_different_company_q + 1)
 									+ " where c.customer_id = " + customer_id
-									+ ";";
+									+ " and c.category = " + tokens[3]
+									+ " and c.company_id <> " + tokens[4] + ";";
 						}
 
 						/* has_bought_same_company_different_category_q */
@@ -492,7 +508,7 @@ public class Parser {
 								+ " and c.category <> "
 								+ tokens[3]
 								+ ";";
-						System.out.println(sql);
+						//System.out.println(sql);
 						rs = stmt.executeQuery(sql);
 
 						customer_id = 0;
@@ -511,7 +527,8 @@ public class Parser {
 									+ "set has_bought_same_company_different_category_q = "
 									+ (has_bought_same_company_different_category_q + 1)
 									+ " where c.customer_id = " + customer_id
-									+ ";";
+									+ " and c.company_id = " + tokens[4]
+									+ " and c.category <> " + tokens[3] + ";";
 						}
 
 						/*
@@ -566,7 +583,7 @@ public class Parser {
 								+ has_returned_company_before_bool
 								+ " where c.customer_id = " + tokens[0]
 								+ " and c.company_id = " + tokens[4] + ";";
-						System.out.println(sql);
+						//System.out.println(sql);
 						stmt.executeUpdate(sql);
 						/*
 						 * c.has_bought_brand_before_q,
@@ -617,7 +634,7 @@ public class Parser {
 								+ " where c.customer_id = " + tokens[0]
 								+ " and c.company_id = " + tokens[4]
 								+ " and c.brand_id = " + tokens[5] + ";";
-						System.out.println(sql);
+						//System.out.println(sql);
 						stmt.executeUpdate(sql);
 
 						/*
@@ -670,7 +687,7 @@ public class Parser {
 								+ has_returned_category_before_bool
 								+ " where c.customer_id = " + tokens[0]
 								+ " and c.category = " + tokens[3] + ";";
-						System.out.println(sql);
+						//System.out.println(sql);
 						stmt.executeUpdate(sql);
 						/*
 						 * c.has_bought_company_brand_category_before_q,
@@ -728,7 +745,7 @@ public class Parser {
 								+ " and c.category = " + tokens[3]
 								+ " and c.company_id = " + tokens[4]
 								+ " and c.brand_id = " + tokens[5] + ";";
-						System.out.println(sql);
+						//System.out.println(sql);
 						stmt.executeUpdate(sql);
 
 						/*
@@ -743,7 +760,7 @@ public class Parser {
 								+ " and c.brand_id = "
 								+ tokens[5]
 								+ " and c.category = " + tokens[3] + ";";
-						System.out.println(sql);
+						//System.out.println(sql);
 						rs = stmt.executeQuery(sql);
 						last_purchase_date = new Date();
 						offer_date = new Date();
@@ -751,7 +768,7 @@ public class Parser {
 						dateString = "";
 
 						customer_id = 0;
-						System.out.println(last_purchase_date);
+						//System.out.println(last_purchase_date);
 						while (rs.next()) {
 							customer_id = Integer.getInteger(rs
 									.getString("customer_id"));
@@ -779,8 +796,10 @@ public class Parser {
 									+ "c.num_days_since_last_purchase_transaction = "
 									+ num_days_since_last_purchase_transaction
 									+ " where c.customer_id = " + customer_id
-									+ ";";
-							System.out.println(sql);
+									+ " and c.company_id = " + tokens[4]
+									+ " and c.brand_id = " + tokens[5]
+									+ " and c.category = " + tokens[3] + ";";
+							//System.out.println(sql);
 							stmt.executeUpdate(sql);
 						}
 
@@ -791,7 +810,7 @@ public class Parser {
 								+ " and c.category = "
 								+ tokens[3]
 								+ " and c.company_id <> " + tokens[4] + ";";
-						System.out.println(sql);
+						//System.out.println(sql);
 						rs = stmt.executeQuery(sql);
 
 						customer_id = 0;
@@ -810,7 +829,8 @@ public class Parser {
 									+ "set has_bought_same_category_different_company_q = "
 									+ (has_bought_same_category_different_company_q + 1)
 									+ " where c.customer_id = " + customer_id
-									+ ";";
+									+ " and c.category = " + tokens[3]
+									+ " and c.company_id <> " + tokens[4] + ";";
 						}
 
 						/* has_bought_same_company_different_category_q */
@@ -822,7 +842,7 @@ public class Parser {
 								+ " and c.category <> "
 								+ tokens[3]
 								+ ";";
-						System.out.println(sql);
+						//System.out.println(sql);
 						rs = stmt.executeQuery(sql);
 
 						customer_id = 0;
@@ -841,7 +861,8 @@ public class Parser {
 									+ "set has_bought_same_company_different_category_q = "
 									+ (has_bought_same_company_different_category_q + 1)
 									+ " where c.customer_id = " + customer_id
-									+ ";";
+									+ " and c.company_id = " + tokens[4]
+									+ " and c.category <> " + tokens[3] + ";";
 						}
 
 					}
@@ -934,7 +955,7 @@ public class Parser {
 							}
 						}
 						sql += ");";
-						System.out.println(sql);
+						//System.out.println(sql);
 						stmt.executeUpdate(sql);
 
 					}
